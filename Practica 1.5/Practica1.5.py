@@ -22,7 +22,7 @@ valores_simbolos = leer_archivo_tokens('tokens.txt')
 with open('ejemplo.json') as file:
     data = json.load(file)
 
-# Construir el archivo de salida en el formato deseado con códigos ASCII para caracteres especiales
+# Construir el archivo de salida 
 with open('resultado.txt', 'w') as file:
     file.write('{" : 123\n')
     file.write('"":34\n')
