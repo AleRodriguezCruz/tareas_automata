@@ -1,7 +1,7 @@
 import json
 
 # Abre el archivo en modo lectura
-with open('archivo.txt', 'r') as file:
+with open('resultado.txt', 'r') as file:
     # Inicializa un diccionario vacío
     diccionario = {}
     # Inicializa un diccionario para almacenar las claves que cumplen con ambas condiciones
