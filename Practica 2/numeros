@@ -1,0 +1,31 @@
+def tokenizar_contenido(contenido):
+    lista_tokens = []
+    numero_actual = ''
+    for caracter in contenido:
+        if caracter.isdigit() or caracter == '.':
+            numero_actual += caracter
+        else:
+            if numero_actual:
+                if '.' in numero_actual:
+                    lista_tokens.append(float(numero_actual))
+                else:
+                    lista_tokens.append(int(numero_actual))
+                numero_actual = ''
+            lista_tokens.append(ord(caracter))
+    if numero_actual:
+        if '.' in numero_actual:
+            lista_tokens.append(float(numero_actual))
+        else:
+            lista_tokens.append(int(numero_actual))
+    return lista_tokens
+
+def mostrar_contenido_tokens(contenido, tokens):
+    for caracter in contenido:
+        if caracter == '\n':
+            print(f'{tokens[caracter]}=[Enter]')
+        elif caracter == ' ':
+            print(f'{tokens[caracter]}=[Espacio]')
+        elif isinstance(tokens[caracter], int):
+            print(f'{tokens[caracter]}={caracter}')
+        else:
+            print(f'{tokens[caracter]}={tokens[caracter]} (Número)')
