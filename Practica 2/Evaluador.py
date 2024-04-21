@@ -5,6 +5,8 @@ creado por ALEJANDRA RODRIGUEZ DE LA CRUZ
 No_Control:22760049
 '''
 
+
+
 # Función para leer el contenido de un archivo
 def leer_archivo(nombre_archivo):
     with open(nombre_archivo, 'r') as archivo:
@@ -12,60 +14,67 @@ def leer_archivo(nombre_archivo):
 
 # Función para tokenizar el contenido del archivo
 def tokenizar_contenido(contenido):
-    lista_tokens = [ord(caracter) for caracter in contenido]  # Convierte cada carácter del contenido en su valor ASCII
-    return lista_tokens
+    tokens = []
+    token = ""
+    for caracter in contenido:
+        if caracter.isdigit():
+            token += caracter
+            if any(c.isalpha() for c in contenido[contenido.index(caracter)+1:]):
+                tokens.append(float(token))
+                token = ""
+            else:
+                tokens.append(int(token))
+                token = ""
+        elif caracter.isalpha():
+            token += caracter
+            tokens.append(token)
+            token = ""
+        elif caracter == " " or caracter == "\n":
+            if token:
+                tokens.append(token)
+                token = ""
+            tokens.append(caracter)
+        else:
+            if (token >= 48 and token <= 57) or token == ".":
+                if token.isdigit():
+                    if "." in contenido[contenido.index(caracter)+1:]:
+                        tokens.append(float(token))
+                    else:
+                        tokens.append(int(token))
+                else:
+                    tokens.append(float(token))
+            else:
+                tokens.append(caracter)
+    if token:
+        tokens.append(token)
+    return tokens
 
 # Función para mostrar el contenido del archivo junto con sus tokens
 def mostrar_contenido_tokens(contenido, tokens):
-    for caracter in contenido:
-        if caracter == '\n':
-            print(f'{tokens[caracter]}=[Enter]')
-        elif caracter == ' ':
-            print(f'{tokens[caracter]}=[Espacio]')
+    for i, token in enumerate(tokens):
+        if token == "\n":
+            print(f'{token}={contenido[i]}')
+        elif token == " ":
+            print(f'{token}={contenido[i]}')
         else:
-            print(f'{tokens[caracter]}={caracter}')
+            print(f'{token}={token}')
 
 # Función para escribir el contenido del archivo con sus tokens en un nuevo archivo
 def escribir_documento(contenido, tokens):
     with open('salida.txt', 'w') as salida:
-        for caracter in contenido:
-            if caracter == '\n':
-                salida.write(f'{tokens[caracter]}=[ENTER]\n')
-            elif caracter == ' ':
-                salida.write(f'{tokens[caracter]}=[ESPACIO]\n')
+        for i, token in enumerate(tokens):
+            if token == "\n":
+                salida.write(f'{token}=[Enter]\n')
+            elif token == " ":
+                salida.write(f'{token}=[Espacio]\n')
             else:
-                salida.write(f'{tokens[caracter]}={caracter}\n')
+                salida.write(f'{token}={token}\n')
 
 # Función para verificar si el archivo es un JSON válido
 def es_json(tokens):
     if tokens[0] != 123:  # Verifica si el primer token es el de la llave de apertura '{'
         print('El archivo no es un JSON válido.')
         exit()
-
-# Función para agrupar los tokens de las cadenas de caracteres en un solo token
-def tokenizar_cadena(tokens):
-    tokens_agrupados = []
-    en_cadena = False
-    for token in tokens:
-        if (token >= 65 and token <= 90) or (token >= 97 and token <= 122):
-            if not en_cadena:
-                tokens_agrupados.append(200)  # Añade un token especial para indicar inicio de cadena
-                en_cadena = True
-        else:
-            en_cadena = False
-            tokens_agrupados.append(token)
-    return tokens_agrupados
-
-# Función para verificar si todas las comillas en el archivo están cerradas correctamente
-def es_cadena(tokens):
-    flag = True 
-    for token in tokens:
-        if token == 34:  # Verifica si el token corresponde a una comilla doble '"'
-            flag = not flag  # Cambia el valor del flag cada vez que encuentra una comilla doble
-    if flag:
-        return True  # Si el flag es True al final, todas las comillas están cerradas correctamente
-    else:
-        return True  # Si el flag es False, hay comillas sin cerrar
 
 # Función principal del programa
 def main():
@@ -74,20 +83,40 @@ def main():
     
     es_json(tokens)  # Verifica si el archivo es un JSON válido
     
-    tokenizar_cadena(tokens)  # Agrupa los tokens de las cadenas de caracteres
+    mostrar_contenido_tokens(contenido_archivo, tokens)  # Muestra el contenido del archivo con sus tokens
     
-    mostrar_contenido_tokens(contenido_archivo, {caracter: ord(caracter) for caracter in contenido_archivo})  # Muestra el contenido del archivo con sus tokens
-    
-    escribir_documento(contenido_archivo, {caracter: ord(caracter) for caracter in contenido_archivo})  # Escribe el contenido del archivo con sus tokens en un nuevo archivo
-    
-    tokens_agrupados = tokenizar_cadena(tokens)  # Obtiene los tokens agrupados de las cadenas de caracteres
-    
-    print(f'Tokens: {tokens}')  # Imprime los tokens originales
-    
-    print(tokens_agrupados)  # Imprime los tokens agrupados
+    escribir_documento(contenido_archivo, tokens)  # Escribe el contenido del archivo con sus tokens en un nuevo archivo
 
-    if not es_cadena(tokens):  # Verifica si todas las comillas están cerradas correctamente si no no es un string
-        print("ERROR: Las comillas no se cerraron correctamente")
+    # Nuevas funciones para tokenizar y evaluar strings
+    tokens_array = tokens
+    tokens_string = []
+
+    def tokenize_string(array):
+        tokens = []
+        agrupados = False
+        for value in array:
+            if (value >= 65 and value <= 90) or (value >= 97 and value <= 122):
+                if not agrupados:
+                    tokens.append(200)
+                    agrupados = True
+            else:
+                agrupados = False
+                tokens.append(value)
+        return tokens
+
+    def is_string(array):
+        flag = True
+        for value in array:
+            if value == 34:
+                flag = not flag
+        if not flag:
+            print("ERROR: las comillas no se cerraron")
+            exit()
+
+    tokenize_string(tokens_array)
+    group_string = tokenize_string(tokens_array)
+    print(group_string)
+    print(is_string(tokens_array))
 
 if __name__ == '__main__':
     main()
