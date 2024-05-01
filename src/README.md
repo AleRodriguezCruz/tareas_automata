@@ -16,4 +16,4 @@ Clona el repositorio o descarga el archivo ZIP del proyecto.
 Asegúrate de tener Python3.10 instalado en tu sistema.
 Ejecuta el script evalua.py proporcionando el nombre del archivo JSON que deseas evaluar como argumento.
 
-> python3.10 evalua.py  // para esto debe existir el archivo ejemplo.json
+> python3.10 Evaluador.py  // para esto debe existir el archivo ejemplo.json
