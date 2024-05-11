@@ -3,6 +3,7 @@
 #creado por ALEJANDRA RODRIGUEZ DE LA CRUZ 
 #No_Control:22760049
 
+
 # Función para leer el contenido de un archivo
 def leer_archivo(nombre_archivo):
     with open(nombre_archivo, 'r') as archivo:
@@ -69,19 +70,32 @@ def es_cadena(tokens):
     else:
         return False  # Si el flag es False, hay comillas sin cerrar
 
-# Función para evaluar el parámetro de edad
-def evaluar_edad(tokens):
-    edad_encontrada = False
+# Función para evaluar si un parámetro es un número entero, decimal o fecha
+def evaluar_entero_decimal_fecha(tokens):
+    numero_entero = False
+    numero_decimal = False
+    fecha = False
     for token in tokens:
-        if token == 34:  # Verifica si el token corresponde a una comilla doble '"'
-            if edad_encontrada:
-                return True
-            edad_encontrada = False
-        elif token >= 48 and token <= 57:  # Verifica si el token es un dígito
-            if edad_encontrada:
-                return False
-            edad_encontrada = True
-    return False
+        if token >= 48 and token <= 57:  # Verifica si el token es un dígito
+            if not numero_entero:
+                numero_entero = True
+        elif token == 46:  # Verifica si el token es un punto decimal '.'
+            if numero_entero and not numero_decimal:
+                numero_decimal = True
+        elif token == 45:  # Verifica si el token es un guion '-'
+            if numero_entero and not fecha:
+                fecha = True
+        else:
+            return False
+
+    if fecha:
+        return "Fecha"
+    elif numero_decimal:
+        return "Decimal"
+    elif numero_entero:
+        return "Entero"
+    else:
+        return False
 
 # Función principal del programa
 def main():
@@ -107,9 +121,12 @@ def main():
     if not es_cadena(tokens):  # Verifica si todas las comillas están cerradas correctamente si no no es un string
         print("ERROR: Las comillas no se cerraron correctamente")
 
-    # Evalúa el parámetro de edad
-    if evaluar_edad(tokens):
-        print("ERROR: El parámetro de edad no está en el formato correcto")
+    # Evalúa si el parámetro es un número entero, decimal o fecha
+    resultado_evaluacion = evaluar_entero_decimal_fecha(tokens)
+    if resultado_evaluacion:
+        print(f"El parámetro es un número {resultado_evaluacion}.")
+    else:
+        print("ERROR: El parámetro no es un número entero, decimal o fecha válido.")
 
 if __name__ == '__main__':
     main()
