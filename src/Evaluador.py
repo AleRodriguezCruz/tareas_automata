@@ -3,130 +3,128 @@
 #creado por ALEJANDRA RODRIGUEZ DE LA CRUZ 
 #No_Control:22760049
 
+import json
 
-# Función para leer el contenido de un archivo
 def leer_archivo(nombre_archivo):
     with open(nombre_archivo, 'r') as archivo:
         return archivo.read()
 
-# Función para tokenizar el contenido del archivo
 def tokenizar_contenido(contenido):
-    lista_tokens = [ord(caracter) for caracter in contenido]  # Convierte cada carácter del contenido en su valor ASCII
-    return lista_tokens
+    return [ord(char) for char in contenido]
 
-# Función para mostrar el contenido del archivo junto con sus tokens
-def mostrar_contenido_tokens(contenido, tokens):
-    for i, caracter in enumerate(contenido):
-        if caracter == '\n':
-            print(f'{tokens[i]}=[Enter]')
-        elif caracter == ' ':
-            print(f'{tokens[i]}=[Espacio]')
-        else:
-            print(f'{tokens[i]}={caracter}')
+def es_fecha(tokens, i):
+    if i + 9 < len(tokens):
+        return (tokens[i] >= 48 and tokens[i] <= 57 and
+                tokens[i+1] >= 48 and tokens[i+1] <= 57 and
+                tokens[i+2] >= 48 and tokens[i+2] <= 57 and
+                tokens[i+3] >= 48 and tokens[i+3] <= 57 and
+                tokens[i+4] == 45 and
+                tokens[i+5] >= 48 and tokens[i+5] <= 57 and
+                tokens[i+6] >= 48 and tokens[i+6] <= 57 and
+                tokens[i+7] == 45 and
+                tokens[i+8] >= 48 and tokens[i+8] <= 57 and
+                tokens[i+9] >= 48 and tokens[i+9] <= 57)
+    return False
 
-# Función para escribir el contenido del archivo con sus tokens en un nuevo archivo
-def escribir_documento(contenido, tokens):
-    with open('salida.txt', 'w') as salida:
-        for i, caracter in enumerate(contenido):
-            if caracter == '\n':
-                salida.write(f'{tokens[i]}=[ENTER]\n')
-            elif caracter == ' ':
-                salida.write(f'{tokens[i]}=[ESPACIO]\n')
-            else:
-                salida.write(f'{tokens[i]}={caracter}\n')
+def es_decimal(tokens, i):
+    if i + 2 < len(tokens) and tokens[i] >= 48 and tokens[i] <= 57:
+        for j in range(i + 1, len(tokens)):
+            if tokens[j] == 46:
+                if j + 1 < len(tokens) and tokens[j + 1] >= 48 and tokens[j + 1] <= 57:
+                    return True
+                else:
+                    return False
+            elif not (tokens[j] >= 48 and tokens[j] <= 57):
+                return False
+    return False
 
-# Función para verificar si el archivo es un JSON válido
-def es_json(tokens):
-    if tokens[0] != 123:  # Verifica si el primer token es el de la llave de apertura '{'
-        print('El archivo no es un JSON válido.')
-        exit()
-
-# Función para agrupar los tokens de las cadenas de caracteres en un solo token
 def tokenizar_cadena(tokens):
     tokens_agrupados = []
-    en_cadena = False
-    for token in tokens:
-        if (token >= 65 and token <= 90) or (token >= 97 and token <= 122) or (token >= 48 and token <= 57):
-            if not en_cadena:
-                tokens_agrupados.append(200)  # Añade un token especial para indicar inicio de cadena
-                en_cadena = True
+    i = 0
+    while i < len(tokens):
+        if (tokens[i] >= 65 and tokens[i] <= 90) or (tokens[i] >= 97 and tokens[i] <= 122):
+            tokens_agrupados.append(200)
+        elif (tokens[i] >= 48 and tokens[i] <= 57):
+            if es_fecha(tokens, i):
+                tokens_agrupados.append(300)
+                i += 9
+            elif es_decimal(tokens, i):
+                tokens_agrupados.append(202)
+                while i < len(tokens) and ((tokens[i] >= 48 and tokens[i] <= 57) or tokens[i] == 46):
+                    i += 1
+                i -= 1
+            else:
+                tokens_agrupados.append(201)
         else:
-            if en_cadena:
-                tokens_agrupados.append(201)  # Añade un token especial para indicar fin de cadena
-                en_cadena = False
-            tokens_agrupados.append(token)
-    if en_cadena:  # Si la cadena termina al final de los tokens
-        tokens_agrupados.append(201)  # Añade un token especial para indicar fin de cadena
+            tokens_agrupados.append(tokens[i])
+        i += 1
     return tokens_agrupados
 
-# Función para verificar si todas las comillas en el archivo están cerradas correctamente
+def verificar_tipos(tokens):
+    contiene_cadena = False
+    contiene_numero_entero = False
+    contiene_decimal = False
+    contiene_fecha = False
+
+    for token in tokens:
+        if token == 200:
+            contiene_cadena = True
+        elif token == 201:
+            contiene_numero_entero = True
+        elif token == 202:
+            contiene_decimal = True
+        elif token == 300:
+            contiene_fecha = True
+
+    return contiene_cadena, contiene_numero_entero, contiene_decimal, contiene_fecha
+
 def es_cadena(tokens):
-    flag = True 
+    stack = []
     for token in tokens:
-        if token == 34:  # Verifica si el token corresponde a una comilla doble '"'
-            flag = not flag  # Cambia el valor del flag cada vez que encuentra una comilla doble
-    if flag:
-        return True  # Si el flag es True al final, todas las comillas están cerradas correctamente
-    else:
-        return False  # Si el flag es False, hay comillas sin cerrar
+        if token == 34:  # comillas dobles
+            if stack and stack[-1] == 34:
+                stack.pop()
+            else:
+                stack.append(token)
+    return not stack
 
-# Función para evaluar si un parámetro es un número entero, decimal o fecha
-def evaluar_entero_decimal_fecha(tokens):
-    numero_entero = False
-    numero_decimal = False
-    fecha = False
-    for token in tokens:
-        if token >= 48 and token <= 57:  # Verifica si el token es un dígito
-            if not numero_entero:
-                numero_entero = True
-        elif token == 46:  # Verifica si el token es un punto decimal '.'
-            if numero_entero and not numero_decimal:
-                numero_decimal = True
-        elif token == 45:  # Verifica si el token es un guion '-'
-            if numero_entero and not fecha:
-                fecha = True
-        else:
-            return False
+def mostrar_contenido_tokens(contenido, tokens):
+    for i, char in enumerate(contenido):
+        print(f'{char}={tokens[i]}')
 
-    if fecha:
-        return "Fecha"
-    elif numero_decimal:
-        return "Decimal"
-    elif numero_entero:
-        return "Entero"
-    else:
-        return False
+def escribir_documento(contenido, tokens):
+    with open('output_tokens.txt', 'w') as archivo:
+        for i, char in enumerate(contenido):
+            archivo.write(f'{char}={tokens[i]}\n')
 
-# Función principal del programa
 def main():
-    contenido_archivo = leer_archivo('ejemplo.json')  # Lee el contenido del archivo 'ejemplo.json'
-    tokens = tokenizar_contenido(contenido_archivo)   # Tokeniza el contenido del archivo
+    contenido_archivo = leer_archivo('ejemplo.json')
+    tokens = tokenizar_contenido(contenido_archivo)
     
-    es_json(tokens)  # Verifica si el archivo es un JSON válido
     
-    tokenizar_cadena(tokens)  # Agrupa los tokens de las cadenas de caracteres
     
-    lista_tokens = [ord(caracter) for caracter in contenido_archivo]  # Convierte cada carácter del contenido en su valor ASCII
+    tokens_agrupados = tokenizar_cadena(tokens)
     
-    mostrar_contenido_tokens(contenido_archivo, lista_tokens)  # Muestra el contenido del archivo con sus tokens
+    mostrar_contenido_tokens(contenido_archivo, tokens)
     
-    escribir_documento(contenido_archivo, lista_tokens)  # Escribe el contenido del archivo con sus tokens en un nuevo archivo
+    escribir_documento(contenido_archivo, tokens)
     
-    tokens_agrupados = tokenizar_cadena(tokens)  # Obtiene los tokens agrupados de las cadenas de caracteres
-    
-    print(f'Tokens: {tokens}')  # Imprime los tokens originales
-    
-    print(tokens_agrupados)  # Imprime los tokens agrupados
+    print(f'Tokens originales: {tokens}')
+    print(f'Tokens agrupados: {tokens_agrupados}')
 
-    if not es_cadena(tokens):  # Verifica si todas las comillas están cerradas correctamente si no no es un string
+    contiene_cadena, contiene_numero_entero, contiene_decimal, contiene_fecha = verificar_tipos(tokens_agrupados)
+
+    if not es_cadena(tokens):
         print("ERROR: Las comillas no se cerraron correctamente")
 
-    # Evalúa si el parámetro es un número entero, decimal o fecha
-    resultado_evaluacion = evaluar_entero_decimal_fecha(tokens)
-    if resultado_evaluacion:
-        print(f"El parámetro es un número {resultado_evaluacion}.")
-    else:
-        print("ERROR: El parámetro no es un número entero, decimal o fecha válido.")
+    if contiene_cadena:
+        print("El JSON contiene cadenas de texto.")
+    if contiene_numero_entero:
+        print("El JSON contiene números enteros.")
+    if contiene_decimal:
+        print("El JSON contiene números decimales.")
+    if contiene_fecha:
+        print("El JSON contiene fechas.")
 
 if __name__ == '__main__':
     main()
