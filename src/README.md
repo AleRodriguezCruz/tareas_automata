@@ -11,7 +11,7 @@ Escribir los tokens en un archivo de salida.
 Verificar si el archivo es un JSON válido.
 Verificar si las comillas en el archivo JSON están correctamente cerradas.
 
-Uso
+Uso:
 Clona el repositorio o descarga el archivo ZIP del proyecto.
 Asegúrate de tener Python3.10 instalado en tu sistema.
 Ejecuta el script evalua.py proporcionando el nombre del archivo JSON que deseas evaluar como argumento.
