@@ -1,13 +1,14 @@
 # Flujo del código
 
-_*Lee el archivo JSON utilizando la función leer_archivo().
-_*Tokeniza el contenido del archivo en una lista de códigos ASCII utilizando la función tokenizar_contenido().
-_*Agrupa los tokens en categorías como cadenas, números enteros, decimales, fechas y caracteres especiales utilizando la función tokenizar_cadena().
-_*Verifica los tipos de tokens en el archivo utilizando la función verificar_tipos().
-_*Muestra el contenido del archivo con los tokens correspondientes utilizando la función mostrar_contenido_tokens().
-_*Escribe el contenido del archivo con los tokens correspondientes en un archivo de salida llamado "output_tokens.txt" utilizando la función escribir_documento().
-_*Verifica si las comillas dobles están cerradas correctamente utilizando la función es_cadena().
-_*Evalua si el JSON es válido según la sintaxis JSON utilizando la función evaluar_json().
+* Lee el archivo JSON utilizando la función `leer_archivo()`.
+* Tokeniza el contenido del archivo en una lista de códigos ASCII utilizando la función `tokenizar_contenido()`.
+* Agrupa los tokens en categorías como cadenas, números enteros, decimales, fechas y caracteres especiales utilizando la función `tokenizar_cadena()`.
+* Verifica los tipos de tokens en el archivo utilizando la función `verificar_tipos()`.
+* Muestra el contenido del archivo con los tokens correspondientes utilizando la función `mostrar_contenido_tokens()`.
+* Escribe el contenido del archivo con los tokens correspondientes en un archivo de salida llamado "output_tokens.txt" utilizando la función `escribir_documento()`.
+* Verifica si las comillas dobles están cerradas correctamente utilizando la función `es_cadena()`.
+* Evalua si el JSON es válido según la sintaxis JSON utilizando la función `evaluar_json()`.
+
 _
 
 ## Alcance del código 
