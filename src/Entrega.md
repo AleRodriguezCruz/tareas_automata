@@ -22,8 +22,7 @@
 * Evalúa si el JSON es válido según la sintaxis JSON.
 
 
-##Proyección del código
-
+## Proyeción del código
 
 * Puede ser utilizado para validación y procesamiento de archivos JSON.
 * Puede ser mejorado para manejar casos especiales o errores adicionales en el formato JSON.
