@@ -1,3 +1,9 @@
+#Evaluador de Archivos JSON.Este script en Python permite leer archivos JSON, 
+#verificar si son válidos según la sintaxis JSON y tokenizar los caracteres del archivo, agrupándolos según las reglas JSON
+#creado por ALEJANDRA RODRIGUEZ DE LA CRUZ 
+#No_Control:22760049
+
+
 import json
 
 def leer_archivo(nombre_archivo):
