@@ -1,8 +1,3 @@
-#Evaluador de Archivos JSON.Este script en Python permite leer archivos JSON, 
-#verificar si son válidos según la sintaxis JSON y tokenizar los caracteres del archivo, agrupándolos según las reglas JSON
-#creado por ALEJANDRA RODRIGUEZ DE LA CRUZ 
-#No_Control:22760049
-
 import json
 
 def leer_archivo(nombre_archivo):
@@ -16,26 +11,33 @@ def es_fecha(tokens, i):
     if i + 9 < len(tokens):
         return (tokens[i] >= 48 and tokens[i] <= 57 and
                 tokens[i+1] >= 48 and tokens[i+1] <= 57 and
-                tokens[i+2] >= 48 and tokens[i+2] <= 57 and
+                tokens[i+2] == 47 and
                 tokens[i+3] >= 48 and tokens[i+3] <= 57 and
-                tokens[i+4] == 45 and
+                tokens[i+4] == 47 and
                 tokens[i+5] >= 48 and tokens[i+5] <= 57 and
                 tokens[i+6] >= 48 and tokens[i+6] <= 57 and
-                tokens[i+7] == 45 and
-                tokens[i+8] >= 48 and tokens[i+8] <= 57 and
-                tokens[i+9] >= 48 and tokens[i+9] <= 57)
+                tokens[i+7] >= 48 and tokens[i+7] <= 57)
     return False
 
 def es_decimal(tokens, i):
     if i + 2 < len(tokens) and tokens[i] >= 48 and tokens[i] <= 57:
+        encontrado_punto = False
         for j in range(i + 1, len(tokens)):
             if tokens[j] == 46:
-                if j + 1 < len(tokens) and tokens[j + 1] >= 48 and tokens[j + 1] <= 57:
-                    return True
-                else:
+                if encontrado_punto:
                     return False
+                encontrado_punto = True
             elif not (tokens[j] >= 48 and tokens[j] <= 57):
                 return False
+        return encontrado_punto
+    return False
+
+def es_entero(tokens, i):
+    if i + 1 < len(tokens) and tokens[i] >= 48 and tokens[i] <= 57:
+        for j in range(i + 1, len(tokens)):
+            if not (tokens[j] >= 48 and tokens[j] <= 57):
+                return False
+        return True
     return False
 
 def tokenizar_cadena(tokens):
@@ -46,15 +48,25 @@ def tokenizar_cadena(tokens):
             tokens_agrupados.append(200)
         elif (tokens[i] >= 48 and tokens[i] <= 57):
             if es_fecha(tokens, i):
-                tokens_agrupados.append(300)
-                i += 9
+                if tokens[i+2] != 47 or tokens[i+4] != 47:
+                    tokens_agrupados.append(888)  # Fecha inválida
+                else:
+                    tokens_agrupados.append(300)
+                i += 8
             elif es_decimal(tokens, i):
                 tokens_agrupados.append(202)
                 while i < len(tokens) and ((tokens[i] >= 48 and tokens[i] <= 57) or tokens[i] == 46):
                     i += 1
                 i -= 1
+            elif es_entero(tokens, i):
+                tokens_agrupados.append(201)
+                while i < len(tokens) and (tokens[i] >= 48 and tokens[i] <= 57):
+                    i += 1
+                i -= 1
             else:
                 tokens_agrupados.append(201)
+        elif tokens[i] in [33, 35, 36, 37]:
+            tokens_agrupados.append(888)  # Caracteres especiales no permitidos
         else:
             tokens_agrupados.append(tokens[i])
         i += 1
@@ -65,6 +77,7 @@ def verificar_tipos(tokens):
     contiene_numero_entero = False
     contiene_decimal = False
     contiene_fecha = False
+    contiene_caracteres_especiales = False
 
     for token in tokens:
         if token == 200:
@@ -75,8 +88,10 @@ def verificar_tipos(tokens):
             contiene_decimal = True
         elif token == 300:
             contiene_fecha = True
+        elif token == 888:
+            contiene_caracteres_especiales = True
 
-    return contiene_cadena, contiene_numero_entero, contiene_decimal, contiene_fecha
+    return contiene_cadena, contiene_numero_entero, contiene_decimal, contiene_fecha, contiene_caracteres_especiales
 
 def es_cadena(tokens):
     stack = []
@@ -100,19 +115,14 @@ def escribir_documento(contenido, tokens):
 def main():
     contenido_archivo = leer_archivo('ejemplo.json')
     tokens = tokenizar_contenido(contenido_archivo)
-    
-    
-    
     tokens_agrupados = tokenizar_cadena(tokens)
-    
     mostrar_contenido_tokens(contenido_archivo, tokens)
-    
     escribir_documento(contenido_archivo, tokens)
-    
+
     print(f'Tokens originales: {tokens}')
     print(f'Tokens agrupados: {tokens_agrupados}')
 
-    contiene_cadena, contiene_numero_entero, contiene_decimal, contiene_fecha = verificar_tipos(tokens_agrupados)
+    contiene_cadena, contiene_numero_entero, contiene_decimal, contiene_fecha, contiene_caracteres_especiales = verificar_tipos(tokens_agrupados)
 
     if not es_cadena(tokens):
         print("ERROR: Las comillas no se cerraron correctamente")
@@ -125,6 +135,8 @@ def main():
         print("El JSON contiene números decimales.")
     if contiene_fecha:
         print("El JSON contiene fechas.")
+    if contiene_caracteres_especiales:
+        print("El JSON contiene caracteres especiales no permitidos (!, #, $, %).")
 
 if __name__ == '__main__':
     main()
