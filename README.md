@@ -28,7 +28,7 @@ Ejecuta el script evaluador.py y el archivo ejemplo.JSON._
 __
 
 ```
-evaluador.py
+Evaluador.py
 ```
 
 _Leer un archivo JSON y devolver su contenido.
