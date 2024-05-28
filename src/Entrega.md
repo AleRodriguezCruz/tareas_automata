@@ -9,24 +9,23 @@
 * Verifica si las comillas dobles están cerradas correctamente utilizando la función `es_cadena()`.
 * Evalua si el JSON es válido según la sintaxis JSON utilizando la función `evaluar_json()`.
 
-_
+
 
 ## Alcance del código 
 
-_
-    -El código puede leer y procesar archivos JSON.
-    -Tokeniza el contenido del archivo en una lista de códigos ASCII.
-    -Agrupa los tokens en categorías como cadenas, números enteros, decimales, fechas y caracteres especiales.
-    -Verifica los tipos de tokens presentes en el archivo.
-    -Muestra y escribe el contenido del archivo con los tokens correspondientes.
-    -Verifica si las comillas dobles están cerradas correctamente.
-    -Evalúa si el JSON es válido según la sintaxis JSON.
-_
+* El código puede leer y procesar archivos JSON.
+* Tokeniza el contenido del archivo en una lista de códigos ASCII.
+* Agrupa los tokens en categorías como cadenas, números enteros, decimales, fechas y caracteres especiales.
+* Verifica los tipos de tokens presentes en el archivo.
+* Muestra y escribe el contenido del archivo con los tokens correspondientes.
+* Verifica si las comillas dobles están cerradas correctamente.
+* Evalúa si el JSON es válido según la sintaxis JSON.
+
 
 ##Proyección del código
 
 
-  _ Puede ser utilizado para validación y procesamiento de archivos JSON.
-    Puede ser mejorado para manejar casos especiales o errores adicionales en el formato JSON.
-    Puede ser optimizado para manejar archivos JSON de gran tamaño o para mejorar el rendimiento._
+* Puede ser utilizado para validación y procesamiento de archivos JSON.
+* Puede ser mejorado para manejar casos especiales o errores adicionales en el formato JSON.
+* Puede ser optimizado para manejar archivos JSON de gran tamaño o para mejorar el rendimiento._
 
